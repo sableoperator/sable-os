@@ -111,31 +111,55 @@ else
   warn "Ollama command not found."
 fi
 
-section "JasonOS Folder Structure"
+section "SableOS Project Structure"
 
-JASONOS_DIR="$HOME/JasonOS"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MODULE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+SABLEOS_DIR="$(cd "$MODULE_DIR/../.." && pwd)"
 
-if [[ -d "$JASONOS_DIR" ]]; then
-  ok "~/JasonOS found."
-
-  REQUIRED_DIRS=(
-    "Scripts"
-    "Widgets"
-    "Assets"
-    "Config"
-    "Backups"
-    "AI_Core"
-  )
-
-  for dir in "${REQUIRED_DIRS[@]}"; do
-    if [[ -d "$JASONOS_DIR/$dir" ]]; then
-      ok "~/JasonOS/$dir exists."
-    else
-      warn "~/JasonOS/$dir is missing."
-    fi
-  done
+if [[ -d "$SABLEOS_DIR/.git" ]]; then
+  ok "SableOS Git repository found."
 else
-  fail "~/JasonOS not found."
+  warn "SableOS Git repository marker was not found."
+fi
+
+REQUIRED_PROJECT_DIRS=(
+  "docs"
+  "modules"
+  "scripts"
+  "assets"
+  "examples"
+  "screenshots"
+)
+
+for dir in "${REQUIRED_PROJECT_DIRS[@]}"; do
+  if [[ -d "$SABLEOS_DIR/$dir" ]]; then
+    ok "SableOS folder exists: $dir/"
+  else
+    warn "SableOS folder is missing: $dir/"
+  fi
+done
+
+REQUIRED_PROJECT_FILES=(
+  "README.md"
+  ".gitignore"
+  "docs/PROJECT_CHARTER.md"
+  "docs/ROADMAP.md"
+  "docs/MODULES.md"
+)
+
+for file in "${REQUIRED_PROJECT_FILES[@]}"; do
+  if [[ -f "$SABLEOS_DIR/$file" ]]; then
+    ok "SableOS file exists: $file"
+  else
+    warn "SableOS file is missing: $file"
+  fi
+done
+
+if [[ -d "$SABLEOS_DIR/modules/ship-doctor" ]]; then
+  ok "Ship Doctor module folder found."
+else
+  fail "Ship Doctor module folder is missing."
 fi
 
 section "Backup Freshness"
