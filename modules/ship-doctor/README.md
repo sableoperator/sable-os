@@ -71,6 +71,14 @@ The current exit behavior is:
 | YELLOW | Warnings found, no failures | `1` |
 | RED | One or more failures found | `2` |
 
+## Install
+
+From the SableOS repo:
+
+```bash
+./modules/ship-doctor/install.sh --dry-run
+./modules/ship-doctor/install.sh
+
 ## Run
 
 From the SableOS repo:
