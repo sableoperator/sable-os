@@ -1,0 +1,51 @@
+# Secrets and private config
+.env
+*.env
+*.key
+*.pem
+*_token*
+*secret*
+*password*
+credentials*
+private/
+config/private/
+
+# Logs, runtime state, and cache
+logs/
+*.log
+state/
+cache/
+tmp/
+*.pid
+
+# Backups and archives
+Backups/
+backups/
+*.tar.gz
+*.zip
+*.bak
+*.old
+
+# Large generated media
+*.mp4
+*.mov
+*.mkv
+*.webm
+*.iso
+*.img
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Node / web tooling, if added later
+node_modules/
+dist/
+build/
+
+# Local editor/system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
