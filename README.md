@@ -33,6 +33,15 @@ Start here:
 - [System Structure](docs/SYSTEM_STRUCTURE.md)
 - [Screenshot Guide](docs/SCREENSHOTS.md)
 
+## Install
+
+SableOS is currently installed module by module.
+
+List available modules:
+
+```bash
+./install.sh list
+
 ## Current Modules
 
 Planned and in-progress modules include:
