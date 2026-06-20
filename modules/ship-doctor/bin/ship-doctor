@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+WARNINGS=0
+FAILURES=0
+
+line() {
+  echo "────────────────────────────────────────"
+}
+
+ok() {
+  echo "[OK] $1"
+}
+
+warn() {
+  echo "[WARN] $1"
+  WARNINGS=$((WARNINGS + 1))
+}
+
+fail() {
+  echo "[FAIL] $1"
+  FAILURES=$((FAILURES + 1))
+}
+
+section() {
+  echo
+  line
+  echo "$1"
+  line
+}
+
+echo "╭────────────────────────────╮"
+echo "│      BEBOP SHIP DOCTOR     │"
+echo "╰────────────────────────────╯"
+
+section "System"
+
+if command -v hostnamectl >/dev/null 2>&1; then
+  hostnamectl 2>/dev/null | sed 's/^/  /' || warn "Could not read hostnamectl output."
+else
+  warn "hostnamectl is not available."
+fi
+
+section "Disk"
+
+HOME_USAGE="$(df -h "$HOME" | awk 'NR==2 {print $5}' | tr -d '%')"
+
+df -h "$HOME" | sed 's/^/  /'
+
+if [[ "$HOME_USAGE" -ge 90 ]]; then
+  fail "Home disk usage is critically high: ${HOME_USAGE}%."
+elif [[ "$HOME_USAGE" -ge 80 ]]; then
+  warn "Home disk usage is getting high: ${HOME_USAGE}%."
+else
+  ok "Home disk usage looks healthy: ${HOME_USAGE}%."
+fi
+
+section "Memory"
+
+free -h | sed 's/^/  /'
+
+if command -v free >/dev/null 2>&1; then
+  MEM_AVAILABLE_MB="$(free -m | awk '/Mem:/ {print $7}')"
+
+  if [[ "$MEM_AVAILABLE_MB" -lt 1000 ]]; then
+    warn "Available memory is low: ${MEM_AVAILABLE_MB} MB."
+  else
+    ok "Available memory looks good: ${MEM_AVAILABLE_MB} MB."
+  fi
+else
+  warn "Could not check memory."
+fi
+
+section "Displays"
+
+if command -v xrandr >/dev/null 2>&1; then
+  xrandr --listmonitors | sed 's/^/  /'
+
+  MONITOR_COUNT="$(xrandr --listmonitors | awk 'NR==1 {print $2}')"
+
+  if [[ "$MONITOR_COUNT" -lt 1 ]]; then
+    fail "No monitors detected by xrandr."
+  elif [[ "$MONITOR_COUNT" -lt 3 ]]; then
+    warn "Only ${MONITOR_COUNT} monitor(s) detected. BEBOP usually expects 3."
+  else
+    ok "${MONITOR_COUNT} monitors detected."
+  fi
+else
+  warn "xrandr is not available. Display check skipped."
+fi
+
+section "Ollama / Local AI"
+
+if command -v ollama >/dev/null 2>&1; then
+  ok "Ollama command found."
+
+  if ollama list >/tmp/ship-doctor-ollama.txt 2>/dev/null; then
+    cat /tmp/ship-doctor-ollama.txt | sed 's/^/  /'
+
+    MODEL_COUNT="$(tail -n +2 /tmp/ship-doctor-ollama.txt | wc -l)"
+
+    if [[ "$MODEL_COUNT" -lt 1 ]]; then
+      warn "Ollama is installed, but no models were listed."
+    else
+      ok "${MODEL_COUNT} Ollama model(s) found."
+    fi
+  else
+    warn "Ollama is installed but not responding. The service may not be running."
+  fi
+else
+  warn "Ollama command not found."
+fi
+
+section "JasonOS Folder Structure"
+
+JASONOS_DIR="$HOME/JasonOS"
+
+if [[ -d "$JASONOS_DIR" ]]; then
+  ok "~/JasonOS found."
+
+  REQUIRED_DIRS=(
+    "Scripts"
+    "Widgets"
+    "Assets"
+    "Config"
+    "Backups"
+    "AI_Core"
+  )
+
+  for dir in "${REQUIRED_DIRS[@]}"; do
+    if [[ -d "$JASONOS_DIR/$dir" ]]; then
+      ok "~/JasonOS/$dir exists."
+    else
+      warn "~/JasonOS/$dir is missing."
+    fi
+  done
+else
+  fail "~/JasonOS not found."
+fi
+
+section "Backup Freshness"
+
+BACKUP_DIR="$HOME/JasonOS/Backups"
+
+if [[ -d "$BACKUP_DIR" ]]; then
+  LATEST_BACKUP="$(find "$BACKUP_DIR" -type f \( -name '*.tar.gz' -o -name '*.zip' -o -name '*.bak' \) -printf '%T@ %p\n' 2>/dev/null | sort -nr | head -n 1 | cut -d' ' -f2-)"
+
+  if [[ -n "${LATEST_BACKUP:-}" ]]; then
+    ok "Latest backup found:"
+    echo "  $LATEST_BACKUP"
+  else
+    warn "Backup folder exists, but no backup archive was found."
+  fi
+else
+  warn "Backup folder not found."
+fi
+
+section "Ship Summary"
+
+echo "Warnings: $WARNINGS"
+echo "Failures: $FAILURES"
+
+if [[ "$FAILURES" -gt 0 ]]; then
+  echo "SHIP STATUS: RED"
+  exit 2
+elif [[ "$WARNINGS" -gt 0 ]]; then
+  echo "SHIP STATUS: YELLOW"
+  exit 1
+else
+  echo "SHIP STATUS: GREEN"
+  exit 0
+fi
