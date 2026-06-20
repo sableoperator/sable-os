@@ -20,6 +20,19 @@ Right now, it is a curated desktop environment and automation layer built on top
 - Creative production and fabrication workflow support
 - A system that is personal, but clean enough to rebuild and share
 
+## Documentation
+
+Project documentation is available in the [`docs/`](docs/) folder.
+
+Start here:
+
+- [Documentation Index](docs/README.md)
+- [Project Charter](docs/PROJECT_CHARTER.md)
+- [Roadmap](docs/ROADMAP.md)
+- [Module Registry](docs/MODULES.md)
+- [System Structure](docs/SYSTEM_STRUCTURE.md)
+- [Screenshot Guide](docs/SCREENSHOTS.md)
+
 ## Current Modules
 
 Planned and in-progress modules include:
