@@ -2,10 +2,10 @@
 set -euo pipefail
 
 MODULE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOURCE_SCRIPT="$MODULE_DIR/bin/sable"
+SOURCE_SCRIPT="$MODULE_DIR/bin/sableos"
 
 INSTALL_DIR="$HOME/.local/bin"
-TARGET_SCRIPT="$INSTALL_DIR/sable"
+TARGET_SCRIPT="$INSTALL_DIR/sableos"
 
 BACKUP_ROOT="$HOME/SableOS_Backups"
 TIMESTAMP="$(date +%Y%m%d-%H%M%S)"
@@ -27,7 +27,7 @@ Options:
   --help        Show this help message
 
 Installs:
-  sable -> ~/.local/bin/sable
+  sableos -> ~/.local/bin/sableos
 USAGE
 }
 
@@ -67,6 +67,9 @@ echo
 if [[ ! -f "$SOURCE_SCRIPT" ]]; then
   echo "ERROR: Source script not found:"
   echo "  $SOURCE_SCRIPT"
+  echo
+  echo "Expected the SableOS CLI source command to exist at:"
+  echo "  modules/sable-cli/bin/sableos"
   exit 1
 fi
 
@@ -87,10 +90,16 @@ echo
 
 if [[ "$DRY_RUN" -eq 1 ]]; then
   log "Dry run complete. No changes were made."
+
   if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
     echo
     echo "WARNING: $INSTALL_DIR is not currently in your PATH."
+    echo
+    echo "Add this line to your shell config if the command is not found:"
+    echo
+    echo 'export PATH="$HOME/.local/bin:$PATH"'
   fi
+
   exit 0
 fi
 
@@ -110,8 +119,8 @@ mkdir -p "$INSTALL_DIR"
 
 if [[ -f "$TARGET_SCRIPT" ]]; then
   mkdir -p "$BACKUP_DIR"
-  cp "$TARGET_SCRIPT" "$BACKUP_DIR/sable"
-  log "Existing command backed up to: $BACKUP_DIR/sable"
+  cp "$TARGET_SCRIPT" "$BACKUP_DIR/sableos"
+  log "Existing command backed up to: $BACKUP_DIR/sableos"
 fi
 
 chmod +x "$SOURCE_SCRIPT"
@@ -132,4 +141,4 @@ if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
 fi
 
 echo "Test it with:"
-echo "  sable help"
+echo "  sableos help"

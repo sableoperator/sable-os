@@ -1,0 +1,189 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+find_sableos_root() {
+  local candidate
+
+  if [[ -n "${SABLEOS_ROOT:-}" && -d "$SABLEOS_ROOT" ]]; then
+    echo "$SABLEOS_ROOT"
+    return 0
+  fi
+
+  for candidate in \
+    "$SCRIPT_DIR/../../.." \
+    "$(pwd)" \
+    "$HOME/Projects/sable-os"
+  do
+    candidate="$(cd "$candidate" 2>/dev/null && pwd || true)"
+
+    if [[ -n "$candidate" && -f "$candidate/install.sh" && -d "$candidate/modules" ]]; then
+      echo "$candidate"
+      return 0
+    fi
+  done
+
+  echo ""
+  return 1
+}
+
+SABLEOS_ROOT_DIR="$(find_sableos_root || true)"
+
+usage() {
+  cat <<'USAGE'
+Sable CLI - main command hub for SableOS
+
+Usage:
+  sableos help
+  sableos version
+  sableos modules
+  sableos doctor
+  sableos status
+  sableos install list
+  sableos install ship-doctor [options]
+  sableos install sable-cli [options]
+  sableos docs
+
+Commands:
+  help                              Show this help message
+  version                           Print the current SableOS version
+  modules                           List available modules
+  doctor                            Run Ship Doctor diagnostics
+  status                            Alias for doctor
+  install list                      List installable modules through the root installer
+  install ship-doctor [options]     Install Ship Doctor through the root installer
+  install sable-cli [options]       Install Sable CLI through the root installer
+  docs                              Show local and GitHub documentation paths
+
+Options are passed through to module installers where supported, including:
+  --dry-run                         Show planned actions without changing anything
+  --yes                             Run without interactive confirmation
+USAGE
+}
+
+require_root() {
+  if [[ -z "$SABLEOS_ROOT_DIR" ]]; then
+    echo "ERROR: Could not locate the SableOS repository."
+    echo
+    echo "Try running from inside the repo:"
+    echo "  cd ~/Projects/sable-os"
+    echo
+    echo "Or set:"
+    echo '  export SABLEOS_ROOT="$HOME/Projects/sable-os"'
+    exit 1
+  fi
+}
+
+run_doctor() {
+  if command -v ship-doctor >/dev/null 2>&1; then
+    ship-doctor
+    return
+  fi
+
+  require_root
+
+  local repo_doctor="$SABLEOS_ROOT_DIR/modules/ship-doctor/bin/ship-doctor"
+
+  if [[ -x "$repo_doctor" ]]; then
+    "$repo_doctor"
+  else
+    echo "ERROR: Ship Doctor was not found."
+    echo "Expected:"
+    echo "  $repo_doctor"
+    exit 1
+  fi
+}
+
+show_version() {
+  if [[ -n "$SABLEOS_ROOT_DIR" && -f "$SABLEOS_ROOT_DIR/VERSION" ]]; then
+    cat "$SABLEOS_ROOT_DIR/VERSION"
+  else
+    echo "SableOS version unknown"
+  fi
+}
+
+show_modules() {
+  echo "Available SableOS modules:"
+  echo "  ship-doctor"
+  echo "  sable-cli"
+}
+
+show_docs() {
+  if [[ -n "$SABLEOS_ROOT_DIR" ]]; then
+    echo "Local docs:"
+    echo "  $SABLEOS_ROOT_DIR/docs"
+    echo
+    echo "Documentation index:"
+    echo "  $SABLEOS_ROOT_DIR/docs/README.md"
+    echo
+  else
+    echo "Local docs:"
+    echo "  SableOS repository not found"
+    echo
+  fi
+
+  echo "GitHub docs:"
+  echo "  https://github.com/sableoperator/sable-os/tree/main/docs"
+}
+
+run_install() {
+  require_root
+
+  local root_installer="$SABLEOS_ROOT_DIR/install.sh"
+
+  if [[ ! -x "$root_installer" ]]; then
+    echo "ERROR: Root installer not found or not executable:"
+    echo "  $root_installer"
+    exit 1
+  fi
+
+  "$root_installer" "$@"
+}
+
+COMMAND="${1:-help}"
+
+case "$COMMAND" in
+  help|--help|-h)
+    usage
+    ;;
+
+  version)
+    show_version
+    ;;
+
+  modules)
+    show_modules
+    ;;
+
+  doctor)
+    run_doctor
+    ;;
+
+  status)
+    run_doctor
+    ;;
+
+  docs)
+    show_docs
+    ;;
+
+  install)
+    shift || true
+
+    if [[ $# -lt 1 ]]; then
+      echo "ERROR: Missing install command."
+      echo
+      usage
+      exit 1
+    fi
+
+    run_install "$@"
+    ;;
+
+  *)
+    echo "Unknown sableos command: $COMMAND"
+    echo "Run: sableos help"
+    exit 1
+    ;;
+esac
