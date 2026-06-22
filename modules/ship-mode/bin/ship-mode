@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION="0.3.0-dev"
+VERSION="0.3.1-dev"
 
 usage() {
   cat <<'USAGE'
@@ -33,16 +33,16 @@ list_modes() {
 Available Ship Modes:
 
   work
-    Focused teaching, planning, documents, grading, and school operations.
+    Focused productivity mode for deep work, planning, writing, communication, and task management.
 
   lounge
-    Music, cocktails, cooking, movies, and relaxed creative time.
+    Relaxed mode for media, browsing, ambient use, personal time, and low-pressure creative work.
 
   clean
-    Quiet, minimal fallback state with reduced visual clutter.
+    Minimal reset mode designed to reduce visual clutter and return the desktop to a quiet baseline.
 
   engineering
-    Linux work, local AI, repo work, diagnostics, and system building.
+    Technical mode for development, diagnostics, system tools, local services, logs, and build workflows.
 MODES
 }
 
@@ -64,15 +64,15 @@ preview_work() {
   cat <<'PREVIEW'
 Ship Mode Preview: work
 
-This mode would eventually prepare the desktop for focused school and planning work.
+This mode would eventually prepare the desktop for focused productivity.
 
 Future possible actions:
 
-  - Use calmer desktop visuals
-  - Prioritize calendar, notes, browser, and document tools
-  - Reduce visual noise
-  - Surface work-related widgets
-  - Hide lounge or media-heavy elements
+  - Reduce distractions
+  - Prioritize active tasks and planning tools
+  - Surface useful communication or calendar context
+  - Organize windows for focused work
+  - Hide nonessential visual noise
 
 Preview result:
 
@@ -84,15 +84,15 @@ preview_lounge() {
   cat <<'PREVIEW'
 Ship Mode Preview: lounge
 
-This mode would eventually prepare the desktop for relaxed creative time.
+This mode would eventually prepare the desktop for relaxed, low-pressure use.
 
 Future possible actions:
 
-  - Use warmer visuals
-  - Prioritize media controls
-  - Surface now-playing and ambient widgets
-  - Hide work reminders
-  - Support evening desktop layouts
+  - Use warmer or calmer visuals
+  - Prioritize media, browsing, or ambient tools
+  - Surface personal or creative widgets
+  - Reduce work-focused reminders
+  - Support casual desktop layouts
 
 Preview result:
 
@@ -104,13 +104,13 @@ preview_clean() {
   cat <<'PREVIEW'
 Ship Mode Preview: clean
 
-This mode would eventually reset the desktop into a quiet, minimal state.
+This mode would eventually reset the desktop into a quiet, minimal baseline.
 
 Future possible actions:
 
-  - Stop nonessential widgets
-  - Hide overlays
-  - Clear temporary visual clutter
+  - Hide nonessential overlays
+  - Stop optional widgets
+  - Reduce visual clutter
   - Keep only core launchers and system status
   - Act as a safe fallback mode
 
@@ -124,15 +124,15 @@ preview_engineering() {
   cat <<'PREVIEW'
 Ship Mode Preview: engineering
 
-This mode would eventually prepare the desktop for Linux work, diagnostics, local AI, and repo building.
+This mode would eventually prepare the desktop for technical work and system building.
 
 Future possible actions:
 
-  - Prioritize terminal tools
-  - Surface system health and local AI status
-  - Show diagnostics widgets
-  - Open project folders or logs
-  - Prepare the desktop for development work
+  - Prioritize terminal and development tools
+  - Surface diagnostics and system health
+  - Show logs or local service status
+  - Open project folders or build contexts
+  - Prepare the desktop for troubleshooting or development workflows
 
 Preview result:
 
