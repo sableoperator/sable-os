@@ -2,6 +2,26 @@
 
 All notable changes to SableOS will be documented in this file.
 
+## [v0.3.1] - 2026-06-21
+
+### Changed
+
+* Generalized Ship Mode language for a broader public audience
+* Updated Ship Mode descriptions to be less specific to one personal workflow
+* Updated preview output language for `work`, `lounge`, `clean`, and `engineering`
+* Updated version to `0.3.1`
+
+### Safety
+
+* No desktop behavior changes
+* Ship Mode remains preview-only
+* No wallpapers, widgets, startup apps, Cinnamon settings, panels, windows, displays, or running processes are changed
+
+### Notes
+
+This patch keeps the SableOS Ship Mode concept intact while making the public wording more flexible for different users and workflows.
+
+
 ## [v0.3.0] - 2026-06-21
 
 ### Added
