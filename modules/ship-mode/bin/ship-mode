@@ -1,0 +1,207 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+VERSION="0.3.0-dev"
+
+usage() {
+  cat <<'USAGE'
+Ship Mode - preview-only desktop mode planner for SableOS
+
+Usage:
+  ship-mode help
+  ship-mode list
+  ship-mode current
+  ship-mode preview work
+  ship-mode preview lounge
+  ship-mode preview clean
+  ship-mode preview engineering
+
+Commands:
+  help                 Show this help message
+  list                 List planned Ship Modes
+  current              Show current placeholder mode state
+  preview <mode>       Preview what a mode would do without changing anything
+
+Important:
+  This command is preview-only.
+  It does not change wallpapers, widgets, startup apps, Cinnamon settings, panels, windows, displays, or running processes.
+USAGE
+}
+
+list_modes() {
+  cat <<'MODES'
+Available Ship Modes:
+
+  work
+    Focused teaching, planning, documents, grading, and school operations.
+
+  lounge
+    Music, cocktails, cooking, movies, and relaxed creative time.
+
+  clean
+    Quiet, minimal fallback state with reduced visual clutter.
+
+  engineering
+    Linux work, local AI, repo work, diagnostics, and system building.
+MODES
+}
+
+current_mode() {
+  cat <<'CURRENT'
+Current Ship Mode:
+
+  unknown
+
+Reason:
+  Ship Mode is currently preview-only.
+  No live desktop state tracking has been implemented yet.
+
+Nothing has been changed.
+CURRENT
+}
+
+preview_work() {
+  cat <<'PREVIEW'
+Ship Mode Preview: work
+
+This mode would eventually prepare the desktop for focused school and planning work.
+
+Future possible actions:
+
+  - Use calmer desktop visuals
+  - Prioritize calendar, notes, browser, and document tools
+  - Reduce visual noise
+  - Surface work-related widgets
+  - Hide lounge or media-heavy elements
+
+Preview result:
+
+  No desktop changes were made.
+PREVIEW
+}
+
+preview_lounge() {
+  cat <<'PREVIEW'
+Ship Mode Preview: lounge
+
+This mode would eventually prepare the desktop for relaxed creative time.
+
+Future possible actions:
+
+  - Use warmer visuals
+  - Prioritize media controls
+  - Surface now-playing and ambient widgets
+  - Hide work reminders
+  - Support evening desktop layouts
+
+Preview result:
+
+  No desktop changes were made.
+PREVIEW
+}
+
+preview_clean() {
+  cat <<'PREVIEW'
+Ship Mode Preview: clean
+
+This mode would eventually reset the desktop into a quiet, minimal state.
+
+Future possible actions:
+
+  - Stop nonessential widgets
+  - Hide overlays
+  - Clear temporary visual clutter
+  - Keep only core launchers and system status
+  - Act as a safe fallback mode
+
+Preview result:
+
+  No desktop changes were made.
+PREVIEW
+}
+
+preview_engineering() {
+  cat <<'PREVIEW'
+Ship Mode Preview: engineering
+
+This mode would eventually prepare the desktop for Linux work, diagnostics, local AI, and repo building.
+
+Future possible actions:
+
+  - Prioritize terminal tools
+  - Surface system health and local AI status
+  - Show diagnostics widgets
+  - Open project folders or logs
+  - Prepare the desktop for development work
+
+Preview result:
+
+  No desktop changes were made.
+PREVIEW
+}
+
+preview_mode() {
+  local mode="${1:-}"
+
+  case "$mode" in
+    work)
+      preview_work
+      ;;
+    lounge)
+      preview_lounge
+      ;;
+    clean)
+      preview_clean
+      ;;
+    engineering)
+      preview_engineering
+      ;;
+    "")
+      echo "ERROR: Missing mode name."
+      echo
+      echo "Try:"
+      echo "  ship-mode preview work"
+      echo "  ship-mode preview lounge"
+      echo "  ship-mode preview clean"
+      echo "  ship-mode preview engineering"
+      exit 1
+      ;;
+    *)
+      echo "ERROR: Unknown Ship Mode: $mode"
+      echo
+      list_modes
+      exit 1
+      ;;
+  esac
+}
+
+COMMAND="${1:-help}"
+
+case "$COMMAND" in
+  help|--help|-h)
+    usage
+    ;;
+
+  list)
+    list_modes
+    ;;
+
+  current)
+    current_mode
+    ;;
+
+  preview)
+    shift || true
+    preview_mode "${1:-}"
+    ;;
+
+  version)
+    echo "$VERSION"
+    ;;
+
+  *)
+    echo "Unknown ship-mode command: $COMMAND"
+    echo "Run: ship-mode help"
+    exit 1
+    ;;
+esac
