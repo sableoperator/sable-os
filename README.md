@@ -41,11 +41,29 @@ List available modules:
 
 ```bash
 ./install.sh list
+```
+
+Install Sable CLI:
+
+```bash
+./install.sh sable-cli --dry-run
+./install.sh sable-cli --yes
+```
+
+## Sable CLI examples
+
+```bash
+sable help
+sable modules
+sable doctor
+sable install ship-doctor --dry-run
+```
 
 ## Current Modules
 
 Planned and in-progress modules include:
 
+- Sable CLI: main command hub for SableOS
 - Ship Doctor: system health and diagnostics
 - Ship Mode: desktop mode switching
 - Mission Log: quick notes and activity tracking
@@ -64,8 +82,8 @@ Instead of being one messy folder of scripts and experiments, SableOS is being o
 
 Early development.
 
-SableOS currently includes its first installable module: Ship Doctor.
+SableOS currently includes installable Ship Doctor and Sable CLI modules.
 
-Ship Doctor provides local system diagnostics and can be installed through the root SableOS installer.
+Ship Doctor provides local system diagnostics and can be installed through the root SableOS installer. Sable CLI provides the `sable` command hub for module discovery, diagnostics, installer routing, docs lookup, and version reporting.
 
 This repository is the clean public-facing version of the system. Private configs, secrets, backups, logs, and machine-specific files are intentionally excluded.

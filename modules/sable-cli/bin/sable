@@ -1,0 +1,199 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_PATH="${BASH_SOURCE[0]}"
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+MODULE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+find_repo_root() {
+  local candidate
+
+  if [[ -n "${SABLEOS_REPO:-}" && -d "$SABLEOS_REPO/.git" ]]; then
+    printf '%s\n' "$SABLEOS_REPO"
+    return 0
+  fi
+
+  candidate="$(cd "$MODULE_DIR/../.." 2>/dev/null && pwd || true)"
+  if [[ -n "$candidate" && -d "$candidate/.git" ]]; then
+    printf '%s\n' "$candidate"
+    return 0
+  fi
+
+  candidate="$HOME/Projects/sable-os"
+  if [[ -d "$candidate/.git" ]]; then
+    printf '%s\n' "$candidate"
+    return 0
+  fi
+
+  candidate="$(pwd)"
+  while [[ "$candidate" != "/" ]]; do
+    if [[ -d "$candidate/.git" && -d "$candidate/modules" ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+    candidate="$(dirname "$candidate")"
+  done
+
+  return 1
+}
+
+REPO_ROOT="$(find_repo_root || true)"
+
+usage() {
+  cat <<'USAGE'
+Sable CLI - main command hub for SableOS
+
+Usage:
+  sable help
+  sable version
+  sable modules
+  sable doctor
+  sable status
+  sable install list
+  sable install ship-doctor [options]
+  sable install sable-cli [options]
+  sable docs
+
+Commands:
+  help                         Show this help message
+  version                      Print the current SableOS version
+  modules                      List available modules
+  doctor                       Run Ship Doctor diagnostics
+  status                       Alias for doctor
+  install list                 List installable modules through the root installer
+  install ship-doctor [options] Install Ship Doctor through the root installer
+  install sable-cli [options]  Install Sable CLI through the root installer
+  docs                         Show local and GitHub documentation paths
+
+Options are passed through to module installers where supported, including:
+  --dry-run                    Show planned actions without changing anything
+  --yes                        Run without interactive confirmation
+USAGE
+}
+
+require_repo() {
+  if [[ -z "$REPO_ROOT" ]]; then
+    echo "ERROR: Could not find the SableOS repository." >&2
+    echo "Set SABLEOS_REPO=/path/to/sable-os and try again." >&2
+    exit 1
+  fi
+}
+
+run_root_installer() {
+  require_repo
+  local installer="$REPO_ROOT/install.sh"
+
+  if [[ ! -x "$installer" ]]; then
+    echo "ERROR: Root installer not found or not executable: $installer" >&2
+    exit 1
+  fi
+
+  (cd "$REPO_ROOT" && ./install.sh "$@")
+}
+
+command_version() {
+  require_repo
+  if [[ -f "$REPO_ROOT/VERSION" ]]; then
+    local version
+    version="$(tr -d '\r\n' < "$REPO_ROOT/VERSION")"
+    if [[ -n "$version" ]]; then
+      echo "$version"
+    else
+      echo "SableOS version unknown"
+    fi
+  else
+    echo "SableOS version unknown"
+  fi
+}
+
+command_modules() {
+  cat <<'MODULES'
+Available SableOS modules:
+  ship-doctor
+  sable-cli
+MODULES
+}
+
+command_doctor() {
+  require_repo
+
+  if command -v ship-doctor >/dev/null 2>&1; then
+    ship-doctor
+    return $?
+  fi
+
+  local repo_doctor="$REPO_ROOT/modules/ship-doctor/bin/ship-doctor"
+  if [[ -x "$repo_doctor" ]]; then
+    "$repo_doctor"
+    return $?
+  fi
+
+  echo "ERROR: Ship Doctor is not installed and repo copy was not found:" >&2
+  echo "  $repo_doctor" >&2
+  exit 1
+}
+
+command_docs() {
+  require_repo
+  echo "Local docs: $REPO_ROOT/docs"
+  echo "Module docs: $REPO_ROOT/modules/sable-cli/README.md"
+  echo "GitHub docs: https://github.com/sableoperator/sable-os/tree/main/docs"
+}
+
+main() {
+  local command="${1:-help}"
+  if [[ $# -gt 0 ]]; then
+    shift
+  fi
+
+  case "$command" in
+    help|--help|-h)
+      usage
+      ;;
+    version)
+      command_version
+      ;;
+    modules)
+      command_modules
+      ;;
+    doctor)
+      command_doctor
+      ;;
+    status)
+      command_doctor
+      ;;
+    install)
+      local install_command="${1:-}"
+      if [[ -z "$install_command" ]]; then
+        echo "ERROR: Missing install command." >&2
+        echo >&2
+        usage >&2
+        exit 1
+      fi
+      shift
+      case "$install_command" in
+        list)
+          run_root_installer list "$@"
+          ;;
+        ship-doctor|sable-cli)
+          run_root_installer "$install_command" "$@"
+          ;;
+        *)
+          echo "ERROR: Unknown install module: $install_command" >&2
+          exit 1
+          ;;
+      esac
+      ;;
+    docs)
+      command_docs
+      ;;
+    *)
+      echo "ERROR: Unknown command: $command" >&2
+      echo >&2
+      usage >&2
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"
