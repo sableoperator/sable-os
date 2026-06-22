@@ -5,17 +5,18 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 find_sableos_root() {
   local candidate
+  local candidates=(
+    "$SCRIPT_DIR/../../.."
+    "$(pwd)"
+    "$HOME/Projects/sable-os"
+  )
 
   if [[ -n "${SABLEOS_ROOT:-}" && -d "$SABLEOS_ROOT" ]]; then
     echo "$SABLEOS_ROOT"
     return 0
   fi
 
-  for candidate in \
-    "$SCRIPT_DIR/../../.." \
-    "$(pwd)" \
-    "$HOME/Projects/sable-os"
-  do
+  for candidate in "${candidates[@]}"; do
     candidate="$(cd "$candidate" 2>/dev/null && pwd || true)"
 
     if [[ -n "$candidate" && -f "$candidate/install.sh" && -d "$candidate/modules" ]]; then
@@ -40,6 +41,12 @@ Usage:
   sableos modules
   sableos doctor
   sableos status
+  sableos mode list
+  sableos mode current
+  sableos mode preview work
+  sableos mode preview lounge
+  sableos mode preview clean
+  sableos mode preview engineering
   sableos install list
   sableos install ship-doctor [options]
   sableos install sable-cli [options]
@@ -51,14 +58,27 @@ Commands:
   modules                           List available modules
   doctor                            Run Ship Doctor diagnostics
   status                            Alias for doctor
+  mode list                         List planned Ship Modes
+  mode current                      Show current placeholder mode state
+  mode preview <mode>               Preview a Ship Mode without changing anything
   install list                      List installable modules through the root installer
   install ship-doctor [options]     Install Ship Doctor through the root installer
   install sable-cli [options]       Install Sable CLI through the root installer
   docs                              Show local and GitHub documentation paths
 
+Ship Mode preview options:
+  work
+  lounge
+  clean
+  engineering
+
 Options are passed through to module installers where supported, including:
   --dry-run                         Show planned actions without changing anything
   --yes                             Run without interactive confirmation
+
+Important:
+  Ship Mode is preview-only right now.
+  It does not change wallpapers, widgets, startup apps, Cinnamon settings, panels, windows, displays, or running processes.
 USAGE
 }
 
@@ -95,6 +115,23 @@ run_doctor() {
   fi
 }
 
+run_mode() {
+  require_root
+
+  local repo_ship_mode="$SABLEOS_ROOT_DIR/modules/ship-mode/bin/ship-mode"
+
+  if [[ -x "$repo_ship_mode" ]]; then
+    "$repo_ship_mode" "$@"
+  else
+    echo "ERROR: Preview-only Ship Mode was not found."
+    echo "Expected:"
+    echo "  $repo_ship_mode"
+    echo
+    echo "SableOS Ship Mode should use the repo preview module, not any existing system ship-mode command."
+    exit 1
+  fi
+}
+
 show_version() {
   if [[ -n "$SABLEOS_ROOT_DIR" && -f "$SABLEOS_ROOT_DIR/VERSION" ]]; then
     cat "$SABLEOS_ROOT_DIR/VERSION"
@@ -107,6 +144,7 @@ show_modules() {
   echo "Available SableOS modules:"
   echo "  ship-doctor"
   echo "  sable-cli"
+  echo "  ship-mode"
 }
 
 show_docs() {
@@ -116,6 +154,9 @@ show_docs() {
     echo
     echo "Documentation index:"
     echo "  $SABLEOS_ROOT_DIR/docs/README.md"
+    echo
+    echo "Ship Mode plan:"
+    echo "  $SABLEOS_ROOT_DIR/docs/SHIP_MODE.md"
     echo
   else
     echo "Local docs:"
@@ -162,6 +203,22 @@ case "$COMMAND" in
 
   status)
     run_doctor
+    ;;
+
+  mode)
+    shift || true
+
+    if [[ $# -lt 1 ]]; then
+      echo "ERROR: Missing mode command."
+      echo
+      echo "Try:"
+      echo "  sableos mode list"
+      echo "  sableos mode current"
+      echo "  sableos mode preview work"
+      exit 1
+    fi
+
+    run_mode "$@"
     ;;
 
   docs)
