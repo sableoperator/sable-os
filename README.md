@@ -34,6 +34,21 @@ Start here:
 - [System Structure](docs/SYSTEM_STRUCTURE.md)
 - [Screenshot Guide](docs/SCREENSHOTS.md)
 
+## Concept Previews
+
+These images show the visual direction for SableOS. They are concept previews, not final UI screenshots.
+
+SableOS is still being built as a terminal-first command environment. Concept previews are included to communicate the intended feel and direction without implying that every visual feature is implemented yet.
+
+Suggested concepts:
+
+* SableOS Command Hub
+* Ship Mode Preview
+* Config-Driven Modes
+* Future Desktop Mode Switching
+
+Concept image files are not included yet. They will be added later under [`screenshots/concepts`](screenshots/concepts/) when public-safe preview images are ready.
+
 ## Install
 
 SableOS is currently installed module by module.
