@@ -2,6 +2,33 @@
 
 All notable changes to SableOS will be documented in this file.
 
+## [v0.3.0] - 2026-06-21
+
+### Added
+
+* Added preview-only Ship Mode command support
+* Added `modules/ship-mode/bin/ship-mode`
+* Added `sableos mode list`
+* Added `sableos mode current`
+* Added `sableos mode preview <mode>`
+* Added preview support for `work`, `lounge`, `clean`, and `engineering` modes
+* Added Ship Mode to the `sableos modules` output
+
+### Changed
+
+* Updated `sableos` to route mode commands through the repository Ship Mode preview module
+* Updated version to `0.3.0`
+
+### Safety
+
+* Ship Mode is preview-only in this release
+* No wallpapers, widgets, startup apps, Cinnamon settings, panels, windows, displays, or running processes are changed
+
+### Notes
+
+This release establishes the public SableOS command structure for future desktop mode switching while keeping the current implementation safe and non-destructive.
+
+
 ## [v0.2.1] - 2026-06-21
 
 ### Changed
