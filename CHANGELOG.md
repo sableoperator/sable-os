@@ -2,6 +2,35 @@
 
 All notable changes to SableOS will be documented in this file.
 
+## [v0.4.0] - 2026-06-21
+
+### Added
+
+* Added config-driven Ship Mode previews
+* Added default `.mode` config files for `work`, `lounge`, `clean`, and `engineering`
+* Added `modules/ship-mode/config/modes`
+* Added Ship Mode config format documentation
+* Added support for listing available modes from config files
+* Added support for rendering previews from `.mode` files
+* Added helpful unknown mode and missing config folder errors
+
+### Changed
+
+* Moved default Ship Mode preview language out of the script and into config files
+* Updated Ship Mode documentation to describe default modes as templates
+* Updated README and roadmap language for config-driven Ship Mode previews
+* Updated version to `0.4.0`
+
+### Safety
+
+* Ship Mode remains preview-only
+* Config actions are printed only and are not executed
+* No wallpapers, widgets, startup apps, Cinnamon settings, panels, windows, displays, running processes, or user environment are changed
+
+### Notes
+
+This release prepares SableOS for future user-defined modes by making Ship Mode previews config-driven instead of hardcoded.
+
 ## [v0.3.1] - 2026-06-21
 
 ### Changed
