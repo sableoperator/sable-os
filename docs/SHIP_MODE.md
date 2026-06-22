@@ -24,85 +24,52 @@ sableos mode preview lounge
 sableos mode preview clean
 sableos mode preview engineering
 
-Planned Modes
-Work Mode
+## Planned Modes
 
-Purpose: focused teaching, planning, documents, grading, and school operations.
+### Work Mode
 
-Possible future actions:
-
-Use calmer desktop visuals
-Prioritize calendar, notes, browser, and document tools
-Reduce visual noise
-Surface work-related widgets
-Hide lounge or media-heavy elements
-Lounge Mode
-
-Purpose: music, cocktails, cooking, movies, and relaxed creative time.
+Purpose: focused productivity, planning, communication, writing, task management, and deep work.
 
 Possible future actions:
 
-Use warmer visuals
-Prioritize media controls
-Surface now-playing and ambient widgets
-Hide work reminders
-Support evening desktop layouts
-Clean Mode
+- Reduce distractions
+- Prioritize active tasks and planning tools
+- Surface useful communication or calendar context
+- Organize windows for focused work
+- Hide nonessential visual noise
 
-Purpose: reset the desktop into a quiet, minimal state.
+### Lounge Mode
 
-Possible future actions:
-
-Stop nonessential widgets
-Hide overlays
-Clear temporary visual clutter
-Keep only core launchers and system status
-Act as a safe fallback mode
-Engineering Mode
-
-Purpose: Linux work, local AI, repo work, diagnostics, and system building.
+Purpose: relaxed desktop use, media, browsing, ambient use, personal time, and low-pressure creative work.
 
 Possible future actions:
 
-Prioritize terminal tools
-Surface system health and local AI status
-Show diagnostics widgets
-Open project folders or logs
-Prepare the desktop for development work
-v0.3.0 Scope
+- Use warmer or calmer visuals
+- Prioritize media, browsing, or ambient tools
+- Surface personal or creative widgets
+- Reduce work-focused reminders
+- Support casual desktop layouts
 
-The first Ship Mode release should include:
+### Clean Mode
 
-A documented Ship Mode plan
-A new ship-mode module folder
-A preview-only command design
-No real desktop changes
-No risky automation
-No changes to Cinnamon, panels, startup apps, wallpapers, or widgets
-Future Scope
+Purpose: reset the desktop into a quiet, minimal baseline.
 
-Later releases may add:
+Possible future actions:
 
-Real mode switching
-Mode config files
-Wallpaper switching
-Widget profiles
-Startup profiles
-Rollback support
-Per-monitor layouts
-Integration with Sable AI Core
-Integration with Ship Doctor checks
-Safety Requirements
+- Hide nonessential overlays
+- Stop optional widgets
+- Reduce visual clutter
+- Keep only core launchers and system status
+- Act as a safe fallback mode
 
-Before Ship Mode can make real changes, it needs:
+### Engineering Mode
 
-Dry-run support
-Backup support
-Rollback support
-Clear user confirmation
-No destructive default behavior
-Logs of every action taken
-Compatibility Notes
+Purpose: technical work, development, diagnostics, system tools, local services, logs, and build workflows.
 
-Ship Mode should not replace the local Sable AI Core.
+Possible future actions:
 
+- Prioritize terminal and development tools
+- Surface diagnostics and system health
+- Show logs or local service status
+- Open project folders or build contexts
+- Prepare the desktop for troubleshooting or development workflows
