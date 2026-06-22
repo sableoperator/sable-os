@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-VERSION="0.3.1-dev"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MODULE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+CONFIG_DIR="$MODULE_DIR/config/modes"
+VERSION="0.4.0-dev"
 
 usage() {
   cat <<'USAGE'
@@ -9,6 +12,7 @@ Ship Mode - preview-only desktop mode planner for SableOS
 
 Usage:
   ship-mode help
+  ship-mode version
   ship-mode list
   ship-mode current
   ship-mode preview work
@@ -18,32 +22,135 @@ Usage:
 
 Commands:
   help                 Show this help message
-  list                 List planned Ship Modes
+  version              Print the Ship Mode preview module version
+  list                 List available Ship Mode config files
   current              Show current placeholder mode state
-  preview <mode>       Preview what a mode would do without changing anything
+  preview <mode>       Preview a mode config without changing anything
 
 Important:
   This command is preview-only.
-  It does not change wallpapers, widgets, startup apps, Cinnamon settings, panels, windows, displays, or running processes.
+  It reads .mode config files and prints previews.
+  It does not execute config actions.
+  It does not change wallpapers, widgets, startup apps, Cinnamon settings, panels, windows, displays, running processes, or user environment.
 USAGE
 }
 
+config_error() {
+  echo "ERROR: Ship Mode config folder was not found or is not readable."
+  echo
+  echo "Expected:"
+  echo "  $CONFIG_DIR"
+  echo
+  echo "Ship Mode is preview-only and cannot list or preview modes without config files."
+  exit 1
+}
+
+ensure_config_dir() {
+  if [[ ! -d "$CONFIG_DIR" || ! -r "$CONFIG_DIR" ]]; then
+    config_error
+  fi
+}
+
+available_mode_files() {
+  ensure_config_dir
+  find "$CONFIG_DIR" -maxdepth 1 -type f -name '*.mode' -printf '%f\n' | sort
+}
+
+available_modes() {
+  available_mode_files | sed 's/\.mode$//'
+}
+
+mode_file_for() {
+  local mode="$1"
+
+  if [[ -z "$mode" ]]; then
+    return 1
+  fi
+
+  case "$mode" in
+    *[!A-Za-z0-9_-]*)
+      return 1
+      ;;
+  esac
+
+  printf '%s/%s.mode\n' "$CONFIG_DIR" "$mode"
+}
+
+read_field() {
+  local file="$1"
+  local key="$2"
+  local line
+
+  line="$(grep -m 1 -E "^${key}:[[:space:]]*" "$file" || true)"
+  printf '%s\n' "${line#*: }"
+}
+
+print_actions() {
+  local file="$1"
+  local in_actions=0
+  local found=0
+  local line
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" =~ ^actions:[[:space:]]*$ ]]; then
+      in_actions=1
+      continue
+    fi
+
+    if [[ "$in_actions" -eq 1 ]]; then
+      if [[ "$line" =~ ^[[:space:]]*$ ]]; then
+        continue
+      fi
+
+      if [[ "$line" =~ ^[A-Za-z0-9_-]+:[[:space:]]* ]]; then
+        break
+      fi
+
+      if [[ "$line" =~ ^[[:space:]]*[-*][[:space:]]+(.+) ]]; then
+        printf '  - %s\n' "${BASH_REMATCH[1]}"
+        found=1
+      fi
+    fi
+  done < "$file"
+
+  if [[ "$found" -eq 0 ]]; then
+    echo "  - No preview actions defined."
+  fi
+}
+
 list_modes() {
-  cat <<'MODES'
-Available Ship Modes:
+  ensure_config_dir
 
-  work
-    Focused productivity mode for deep work, planning, writing, communication, and task management.
+  local files
+  files="$(available_mode_files)"
 
-  lounge
-    Relaxed mode for media, browsing, ambient use, personal time, and low-pressure creative work.
+  if [[ -z "$files" ]]; then
+    echo "No Ship Mode configs found in:"
+    echo "  $CONFIG_DIR"
+    echo
+    echo "No desktop changes were made."
+    return 0
+  fi
 
-  clean
-    Minimal reset mode designed to reduce visual clutter and return the desktop to a quiet baseline.
+  echo "Available Ship Modes:"
+  echo
 
-  engineering
-    Technical mode for development, diagnostics, system tools, local services, logs, and build workflows.
-MODES
+  local file_name file_path mode summary
+  while IFS= read -r file_name; do
+    [[ -z "$file_name" ]] && continue
+    mode="${file_name%.mode}"
+    file_path="$CONFIG_DIR/$file_name"
+    summary="$(read_field "$file_path" "summary")"
+
+    echo "  $mode"
+    if [[ -n "$summary" ]]; then
+      echo "    $summary"
+    fi
+    echo "    config: modules/ship-mode/config/modes/$file_name"
+    echo
+  done <<< "$files"
+
+  echo "No desktop changes were made."
 }
 
 current_mode() {
@@ -53,126 +160,89 @@ Current Ship Mode:
   unknown
 
 Reason:
+  Live desktop state tracking is not implemented yet.
   Ship Mode is currently preview-only.
-  No live desktop state tracking has been implemented yet.
 
-Nothing has been changed.
+No desktop changes were made.
 CURRENT
 }
 
-preview_work() {
-  cat <<'PREVIEW'
-Ship Mode Preview: work
+unknown_mode_error() {
+  local mode="$1"
 
-This mode would eventually prepare the desktop for focused productivity.
+  echo "ERROR: Unknown Ship Mode: $mode"
+  echo
+  echo "Available modes:"
 
-Future possible actions:
+  local modes
+  modes="$(available_modes || true)"
 
-  - Reduce distractions
-  - Prioritize active tasks and planning tools
-  - Surface useful communication or calendar context
-  - Organize windows for focused work
-  - Hide nonessential visual noise
+  if [[ -n "$modes" ]]; then
+    while IFS= read -r available; do
+      [[ -n "$available" ]] && echo "  - $available"
+    done <<< "$modes"
+  else
+    echo "  none found"
+  fi
 
-Preview result:
-
-  No desktop changes were made.
-PREVIEW
-}
-
-preview_lounge() {
-  cat <<'PREVIEW'
-Ship Mode Preview: lounge
-
-This mode would eventually prepare the desktop for relaxed, low-pressure use.
-
-Future possible actions:
-
-  - Use warmer or calmer visuals
-  - Prioritize media, browsing, or ambient tools
-  - Surface personal or creative widgets
-  - Reduce work-focused reminders
-  - Support casual desktop layouts
-
-Preview result:
-
-  No desktop changes were made.
-PREVIEW
-}
-
-preview_clean() {
-  cat <<'PREVIEW'
-Ship Mode Preview: clean
-
-This mode would eventually reset the desktop into a quiet, minimal baseline.
-
-Future possible actions:
-
-  - Hide nonessential overlays
-  - Stop optional widgets
-  - Reduce visual clutter
-  - Keep only core launchers and system status
-  - Act as a safe fallback mode
-
-Preview result:
-
-  No desktop changes were made.
-PREVIEW
-}
-
-preview_engineering() {
-  cat <<'PREVIEW'
-Ship Mode Preview: engineering
-
-This mode would eventually prepare the desktop for technical work and system building.
-
-Future possible actions:
-
-  - Prioritize terminal and development tools
-  - Surface diagnostics and system health
-  - Show logs or local service status
-  - Open project folders or build contexts
-  - Prepare the desktop for troubleshooting or development workflows
-
-Preview result:
-
-  No desktop changes were made.
-PREVIEW
+  echo
+  echo "No desktop changes were made."
+  exit 1
 }
 
 preview_mode() {
   local mode="${1:-}"
 
-  case "$mode" in
-    work)
-      preview_work
-      ;;
-    lounge)
-      preview_lounge
-      ;;
-    clean)
-      preview_clean
-      ;;
-    engineering)
-      preview_engineering
-      ;;
-    "")
-      echo "ERROR: Missing mode name."
-      echo
-      echo "Try:"
-      echo "  ship-mode preview work"
-      echo "  ship-mode preview lounge"
-      echo "  ship-mode preview clean"
-      echo "  ship-mode preview engineering"
-      exit 1
-      ;;
-    *)
-      echo "ERROR: Unknown Ship Mode: $mode"
-      echo
-      list_modes
-      exit 1
-      ;;
-  esac
+  if [[ -z "$mode" ]]; then
+    echo "ERROR: Missing mode name."
+    echo
+    echo "Try one of:"
+    local modes
+    modes="$(available_modes || true)"
+    if [[ -n "$modes" ]]; then
+      while IFS= read -r available; do
+        [[ -n "$available" ]] && echo "  ship-mode preview $available"
+      done <<< "$modes"
+    else
+      echo "  ship-mode list"
+    fi
+    echo
+    echo "No desktop changes were made."
+    exit 1
+  fi
+
+  ensure_config_dir
+
+  local file
+  file="$(mode_file_for "$mode" || true)"
+
+  if [[ -z "$file" || ! -f "$file" ]]; then
+    unknown_mode_error "$mode"
+  fi
+
+  local name summary
+  name="$(read_field "$file" "name")"
+  summary="$(read_field "$file" "summary")"
+
+  [[ -z "$name" ]] && name="$mode"
+
+  echo "Ship Mode Preview: $name"
+  echo
+
+  if [[ -n "$summary" ]]; then
+    echo "$summary"
+    echo
+  fi
+
+  echo "Config file: modules/ship-mode/config/modes/$mode.mode"
+  echo
+  echo "Preview actions from config:"
+  print_actions "$file"
+  echo
+  echo "Safety:"
+  echo "  No desktop changes were made."
+  echo "  Config actions were not executed."
+  echo "  Wallpapers, widgets, startup apps, Cinnamon settings, panels, windows, displays, running processes, and user environment were not changed."
 }
 
 COMMAND="${1:-help}"
@@ -180,6 +250,10 @@ COMMAND="${1:-help}"
 case "$COMMAND" in
   help|--help|-h)
     usage
+    ;;
+
+  version)
+    echo "$VERSION"
     ;;
 
   list)
@@ -195,13 +269,11 @@ case "$COMMAND" in
     preview_mode "${1:-}"
     ;;
 
-  version)
-    echo "$VERSION"
-    ;;
-
   *)
     echo "Unknown ship-mode command: $COMMAND"
     echo "Run: ship-mode help"
+    echo
+    echo "No desktop changes were made."
     exit 1
     ;;
 esac
