@@ -42,6 +42,7 @@ config_error() {
   echo "  $CONFIG_DIR"
   echo
   echo "Ship Mode is preview-only and cannot list or preview modes without config files."
+  echo "No desktop changes were made."
   exit 1
 }
 
@@ -82,7 +83,9 @@ read_field() {
   local line
 
   line="$(grep -m 1 -E "^${key}:[[:space:]]*" "$file" || true)"
-  printf '%s\n' "${line#*: }"
+  line="${line#*:}"
+  line="${line#${line%%[![:space:]]*}}"
+  printf '%s\n' "$line"
 }
 
 print_actions() {

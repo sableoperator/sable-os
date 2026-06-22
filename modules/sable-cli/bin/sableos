@@ -78,7 +78,7 @@ Options are passed through to module installers where supported, including:
 
 Important:
   Ship Mode is preview-only right now.
-  It does not change wallpapers, widgets, startup apps, Cinnamon settings, panels, windows, displays, or running processes.
+  It does not change wallpapers, widgets, startup apps, Cinnamon settings, panels, windows, displays, running processes, or user environment.
 USAGE
 }
 
