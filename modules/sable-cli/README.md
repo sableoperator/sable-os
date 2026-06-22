@@ -9,28 +9,28 @@ The MVP keeps SableOS terminal-first and modular by giving users a predictable c
 ## Commands
 
 ```bash
-sable help
-sable version
-sable modules
-sable doctor
-sable status
-sable install list
-sable install ship-doctor [options]
-sable install sable-cli [options]
-sable docs
+sableos help
+sableos version
+sableos modules
+sableos doctor
+sableos status
+sableos install list
+sableos install ship-doctor [options]
+sableos install sable-cli [options]
+sableos docs
 ```
 
 ### Command behavior
 
-- `sable help` shows usage and available commands.
-- `sable version` reads `VERSION` from the repo root when present, otherwise prints `SableOS version unknown`.
-- `sable modules` lists the current MVP modules: `ship-doctor` and `sable-cli`.
-- `sable doctor` runs installed `ship-doctor` if available, otherwise runs `modules/ship-doctor/bin/ship-doctor` from the repo.
-- `sable status` is an alias for `sable doctor`.
-- `sable install list` routes to `./install.sh list`.
-- `sable install ship-doctor [options]` routes to `./install.sh ship-doctor [options]`.
-- `sable install sable-cli [options]` routes to `./install.sh sable-cli [options]`.
-- `sable docs` prints local and GitHub docs paths.
+- `sableos help` shows usage and available commands.
+- `sableos version` reads `VERSION` from the repo root when present, otherwise prints `SableOS version unknown`.
+- `sableos modules` lists the current MVP modules: `ship-doctor` and `sable-cli`.
+- `sableos doctor` runs installed `ship-doctor` if available, otherwise runs `modules/ship-doctor/bin/ship-doctor` from the repo.
+- `sableos status` is an alias for `sableos doctor`.
+- `sableos install list` routes to `./install.sh list`.
+- `sableos install ship-doctor [options]` routes to `./install.sh ship-doctor [options]`.
+- `sableos install sable-cli [options]` routes to `./install.sh sable-cli [options]`.
+- `sableos docs` prints local and GitHub docs paths.
 
 ## Install instructions
 

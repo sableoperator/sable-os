@@ -2,6 +2,23 @@
 
 All notable changes to SableOS will be documented in this file.
 
+## [v0.2.1] - 2026-06-21
+
+### Changed
+
+- Renamed the installed SableOS CLI command from `sable` to `sableos`
+- Updated Sable CLI installer target to `~/.local/bin/sableos`
+- Updated CLI help text to use `sableos`
+- Updated command examples where needed
+
+### Fixed
+
+- Avoided command name collision with the existing Sable AI Core `sable` command
+
+### Notes
+
+This patch keeps the existing BEBOP/Sable AI Core command intact while giving the public SableOS project its own command hub through `sableos`.
+
 ## [v0.2.0] - 2026-06-21
 
 ### Added
