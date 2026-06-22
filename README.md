@@ -53,10 +53,10 @@ Install Sable CLI:
 ## Sable CLI examples
 
 ```bash
-sable help
-sable modules
-sable doctor
-sable install ship-doctor --dry-run
+sableos help
+sableos modules
+sableos doctor
+sableos install ship-doctor --dry-run
 ```
 
 ## Current Modules
