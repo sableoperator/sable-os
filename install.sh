@@ -14,6 +14,7 @@ SableOS Installer
 Usage:
   ./install.sh list
   ./install.sh ship-doctor [options]
+  ./install.sh sable-cli [options]
 
 Options:
   --dry-run     Show planned actions without changing anything
@@ -24,12 +25,39 @@ Examples:
   ./install.sh list
   ./install.sh ship-doctor --dry-run
   ./install.sh ship-doctor --yes
+  ./install.sh sable-cli --dry-run
+  ./install.sh sable-cli --yes
 USAGE
 }
 
 list_modules() {
   echo "Available SableOS modules:"
   echo "  ship-doctor    System health checks and diagnostics"
+  echo "  sable-cli      Main command hub for SableOS"
+}
+
+run_module_installer() {
+  local module_name="$1"
+  local display_name="$2"
+  local module_installer="$ROOT_DIR/modules/$module_name/install.sh"
+
+  if [[ ! -x "$module_installer" ]]; then
+    echo "ERROR: $display_name installer not found or not executable:"
+    echo "  $module_installer"
+    exit 1
+  fi
+
+  local args=()
+
+  if [[ "$DRY_RUN" -eq 1 ]]; then
+    args+=("--dry-run")
+  fi
+
+  if [[ "$YES" -eq 1 ]]; then
+    args+=("--yes")
+  fi
+
+  "$module_installer" "${args[@]}"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -40,6 +68,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     ship-doctor)
       COMMAND="ship-doctor"
+      shift
+      ;;
+    sable-cli)
+      COMMAND="sable-cli"
       shift
       ;;
     --dry-run)
@@ -73,25 +105,10 @@ case "$COMMAND" in
     list_modules
     ;;
   ship-doctor)
-    MODULE_INSTALLER="$ROOT_DIR/modules/ship-doctor/install.sh"
-
-    if [[ ! -x "$MODULE_INSTALLER" ]]; then
-      echo "ERROR: Ship Doctor installer not found or not executable:"
-      echo "  $MODULE_INSTALLER"
-      exit 1
-    fi
-
-    ARGS=()
-
-    if [[ "$DRY_RUN" -eq 1 ]]; then
-      ARGS+=("--dry-run")
-    fi
-
-    if [[ "$YES" -eq 1 ]]; then
-      ARGS+=("--yes")
-    fi
-
-    "$MODULE_INSTALLER" "${ARGS[@]}"
+    run_module_installer "ship-doctor" "Ship Doctor"
+    ;;
+  sable-cli)
+    run_module_installer "sable-cli" "Sable CLI"
     ;;
   *)
     echo "ERROR: Unknown command: $COMMAND"
