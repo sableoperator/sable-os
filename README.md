@@ -64,4 +64,8 @@ Instead of being one messy folder of scripts and experiments, SableOS is being o
 
 Early development.
 
+SableOS currently includes its first installable module: Ship Doctor.
+
+Ship Doctor provides local system diagnostics and can be installed through the root SableOS installer.
+
 This repository is the clean public-facing version of the system. Private configs, secrets, backups, logs, and machine-specific files are intentionally excluded.

@@ -18,7 +18,7 @@ A module is a focused part of the system that can be documented, tested, improve
 
 | Module | Status | Purpose | Location |
 |---|---|---|---|
-| Ship Doctor | In Progress | System health checks, diagnostics, and recovery hints | `modules/ship-doctor/` |
+| Ship Doctor | Active | System health checks, diagnostics, install support, and recovery hints | `modules/ship-doctor/` |
 | Ship Mode | Planned | Switch between desktop modes such as work, lounge, clean, and engineering | `modules/ship-mode/` |
 | Mission Log | Planned | Quick notes, activity logging, and command-deck status updates | `modules/mission-log/` |
 | Control Center | Planned | Main launcher and command interface for SableOS tools | `modules/control-center/` |

@@ -19,12 +19,12 @@ SableOS is being developed in phases so the system stays clean, modular, and rec
 
 Goal: make SableOS easier to inspect, troubleshoot, and restore.
 
-- [ ] Connect Ship Doctor as the first official module
-- [ ] Add system health checks
-- [ ] Add display layout checks
-- [ ] Add local AI/Ollama checks
-- [ ] Add backup freshness checks
-- [ ] Add warning and failure summary
+- [x] Connect Ship Doctor as the first official module
+- [x] Add system health checks
+- [x] Add display layout checks
+- [x] Add local AI/Ollama checks
+- [x] Add backup freshness checks
+- [x] Add warning and failure summary
 - [ ] Add repair suggestions
 - [ ] Add recovery notes
 
@@ -60,10 +60,10 @@ Goal: move from documentation into reusable modules.
 
 Goal: make SableOS easier to install or rebuild.
 
-- [ ] Add safe installer script
-- [ ] Add dry-run mode
-- [ ] Add module selection
-- [ ] Add backup-before-change behavior
+- [x] Add safe installer script
+- [x] Add dry-run mode
+- [x] Add module selection
+- [x] Add backup-before-change behavior
 - [ ] Add dependency checks
 - [ ] Add uninstall or rollback notes
 
