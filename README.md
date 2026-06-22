@@ -30,6 +30,7 @@ Start here:
 - [Project Charter](docs/PROJECT_CHARTER.md)
 - [Roadmap](docs/ROADMAP.md)
 - [Module Registry](docs/MODULES.md)
+- [Ship Mode](docs/SHIP_MODE.md)
 - [System Structure](docs/SYSTEM_STRUCTURE.md)
 - [Screenshot Guide](docs/SCREENSHOTS.md)
 
@@ -56,8 +57,26 @@ Install Sable CLI:
 sableos help
 sableos modules
 sableos doctor
+sableos mode list
+sableos mode preview engineering
 sableos install ship-doctor --dry-run
 ```
+
+## Ship Mode previews
+
+Ship Mode is currently preview-only and config-driven. Default mode templates live in:
+
+```text
+modules/ship-mode/config/modes
+```
+
+Preview a mode without changing the desktop:
+
+```bash
+sableos mode preview work
+```
+
+No real desktop changes happen yet. Ship Mode does not change wallpapers, widgets, startup apps, Cinnamon settings, panels, windows, displays, running processes, or user environment.
 
 ## Current Modules
 
@@ -65,7 +84,7 @@ Planned and in-progress modules include:
 
 - Sable CLI: main command hub for SableOS
 - Ship Doctor: system health and diagnostics
-- Ship Mode: desktop mode switching
+- Ship Mode: config-driven preview templates for desktop modes
 - Mission Log: quick notes and activity tracking
 - AI Core: local assistant and automation layer
 - Control Center: launcher and command interface
@@ -82,8 +101,8 @@ Instead of being one messy folder of scripts and experiments, SableOS is being o
 
 Early development.
 
-SableOS currently includes installable Ship Doctor and Sable CLI modules.
+SableOS currently includes installable Ship Doctor and Sable CLI modules, plus preview-only Ship Mode templates.
 
-Ship Doctor provides local system diagnostics and can be installed through the root SableOS installer. Sable CLI provides the `sable` command hub for module discovery, diagnostics, installer routing, docs lookup, and version reporting.
+Ship Doctor provides local system diagnostics and can be installed through the root SableOS installer. Sable CLI provides the `sableos` command hub for module discovery, diagnostics, installer routing, docs lookup, version reporting, and Ship Mode previews.
 
 This repository is the clean public-facing version of the system. Private configs, secrets, backups, logs, and machine-specific files are intentionally excluded.

@@ -1,20 +1,43 @@
 # Ship Mode
 
-Ship Mode is the planned desktop mode system for SableOS.
+Ship Mode is the preview-only desktop mode planner for SableOS.
 
-The goal is to let the user preview and eventually switch between different desktop operating states without manually changing wallpapers, widgets, layouts, launchers, or startup behavior.
+It lists and previews mode templates such as work, lounge, clean, and engineering without changing the desktop. The current implementation is config-driven: default mode descriptions live in plain-text `.mode` files instead of being hardcoded in the script.
 
-This module is planned for SableOS v0.3.0.
-
-## Design Principle
+## Safety Principle
 
 Ship Mode must be safe before it is powerful.
 
-The first version should be preview-only. It should describe what would happen without changing the desktop.
+The current version is preview-only. It only reads mode config files and prints what a future mode could do.
 
-No wallpaper changes, widget changes, autostart changes, display changes, or process killing should happen in the first planning release.
+It does **not** change:
 
-## Planned Command Shape
+- Wallpapers
+- Widgets
+- Startup apps
+- Cinnamon settings
+- Panels
+- Windows
+- Displays
+- Running processes
+- User environment
+
+Config actions are never executed. They are printed as preview text only.
+
+## Commands
+
+```bash
+ship-mode help
+ship-mode version
+ship-mode list
+ship-mode current
+ship-mode preview work
+ship-mode preview lounge
+ship-mode preview clean
+ship-mode preview engineering
+```
+
+Through Sable CLI:
 
 ```bash
 sableos mode list
@@ -23,53 +46,47 @@ sableos mode preview work
 sableos mode preview lounge
 sableos mode preview clean
 sableos mode preview engineering
+```
 
-## Planned Modes
+`ship-mode current` reports `unknown` because live desktop state tracking is not implemented yet.
 
-### Work Mode
+## Config-driven default modes
 
-Purpose: focused productivity, planning, communication, writing, task management, and deep work.
+Default modes are templates. They describe possible future desktop states in public, user-neutral language.
 
-Possible future actions:
+Config files live in:
 
-- Reduce distractions
-- Prioritize active tasks and planning tools
-- Surface useful communication or calendar context
-- Organize windows for focused work
-- Hide nonessential visual noise
+```text
+modules/ship-mode/config/modes
+```
 
-### Lounge Mode
+Current default templates:
 
-Purpose: relaxed desktop use, media, browsing, ambient use, personal time, and low-pressure creative work.
+| Mode | Purpose |
+|---|---|
+| `work` | Focused productivity mode for deep work, planning, writing, communication, and task management. |
+| `lounge` | Relaxed mode for media, browsing, ambient use, personal time, and low-pressure creative work. |
+| `clean` | Minimal reset mode designed to reduce visual clutter and return the desktop to a quiet baseline. |
+| `engineering` | Technical mode for development, diagnostics, system tools, local services, logs, and build workflows. |
 
-Possible future actions:
+## Config format
 
-- Use warmer or calmer visuals
-- Prioritize media, browsing, or ambient tools
-- Surface personal or creative widgets
-- Reduce work-focused reminders
-- Support casual desktop layouts
+Each mode uses a simple `.mode` text file with top-level fields and an action list:
 
-### Clean Mode
+```text
+name: work
+summary: Focused productivity mode for deep work, planning, writing, communication, and task management.
 
-Purpose: reset the desktop into a quiet, minimal baseline.
+actions:
+* Reduce distractions
+* Prioritize active tasks and planning tools
+* Surface useful communication or calendar context
+```
 
-Possible future actions:
+See [`modules/ship-mode/docs/CONFIG_FORMAT.md`](../modules/ship-mode/docs/CONFIG_FORMAT.md) for details.
 
-- Hide nonessential overlays
-- Stop optional widgets
-- Reduce visual clutter
-- Keep only core launchers and system status
-- Act as a safe fallback mode
+## Future direction
 
-### Engineering Mode
+Future versions may add user override paths for local custom templates. Those overrides should remain separate from the public defaults and should preserve the same safety model until real switching is intentionally designed and reviewed.
 
-Purpose: technical work, development, diagnostics, system tools, local services, logs, and build workflows.
-
-Possible future actions:
-
-- Prioritize terminal and development tools
-- Surface diagnostics and system health
-- Show logs or local service status
-- Open project folders or build contexts
-- Prepare the desktop for troubleshooting or development workflows
+Real desktop switching is not implemented yet.

@@ -1,0 +1,9 @@
+name: clean
+summary: Minimal reset mode designed to reduce visual clutter and return the desktop to a quiet baseline.
+
+actions:
+* Hide nonessential overlays
+* Reduce visual clutter
+* Keep only core launchers and system status
+* Emphasize quiet defaults
+* Act as a safe fallback template

@@ -1,0 +1,9 @@
+name: engineering
+summary: Technical mode for development, diagnostics, system tools, local services, logs, and build workflows.
+
+actions:
+* Prioritize terminal and development tools
+* Surface diagnostics and system health context
+* Show logs or local service status
+* Open project folders or build contexts
+* Prepare the desktop for troubleshooting or development workflows

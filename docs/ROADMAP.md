@@ -47,7 +47,9 @@ Goal: document how the real workstation is built without exposing private files.
 Goal: move from documentation into reusable modules.
 
 - [ ] Ship Doctor
-- [ ] Ship Mode
+- [x] Ship Mode preview templates
+- [ ] Ship Mode user override paths
+- [ ] Ship Mode real switching design and safety review
 - [ ] Mission Log
 - [ ] Control Center
 - [ ] Widget System
